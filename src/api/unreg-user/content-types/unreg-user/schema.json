@@ -1,0 +1,18 @@
+{
+  "kind": "collectionType",
+  "collectionName": "unreg_users",
+  "info": {
+    "singularName": "unreg-user",
+    "pluralName": "unreg-users",
+    "displayName": "UnregUsers"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "firebase_token": {
+      "type": "string"
+    }
+  }
+}

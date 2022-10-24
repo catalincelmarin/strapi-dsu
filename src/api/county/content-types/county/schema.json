@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "counties",
+  "info": {
+    "singularName": "county",
+    "pluralName": "counties",
+    "displayName": "Judete"
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nume": {
+      "type": "string"
+    },
+    "abreviere": {
+      "type": "string"
+    },
+    "d": {
+      "type": "text"
+    },
+    "alerte": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::alert.alert",
+      "inversedBy": "judete"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "judete"
+    }
+  }
+}

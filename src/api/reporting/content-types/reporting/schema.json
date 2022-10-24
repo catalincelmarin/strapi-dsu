@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "reportings",
+  "info": {
+    "singularName": "reporting",
+    "pluralName": "reportings",
+    "displayName": "Raportari"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "data": {
+      "type": "datetime"
+    },
+    "upload": {
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ],
+      "type": "media",
+      "multiple": true,
+      "required": true
+    },
+    "descriere": {
+      "type": "text"
+    },
+    "uploader": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    }
+  }
+}

@@ -1,0 +1,53 @@
+{
+  "kind": "collectionType",
+  "collectionName": "alerts_codes",
+  "info": {
+    "singularName": "alerts-code",
+    "pluralName": "alerts-codes",
+    "displayName": "Coduri alerta"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "nume": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string"
+    },
+    "foto": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false,
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      }
+    },
+    "culoare": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "enumeration",
+      "enum": [
+        "ROSU",
+        "PORTOCALIU",
+        "GALBEN"
+      ],
+      "required": true
+    }
+  }
+}
