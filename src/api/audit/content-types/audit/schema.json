@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "audits",
+  "info": {
+    "singularName": "audit",
+    "pluralName": "audits",
+    "displayName": "Audit ",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "action": {
+      "type": "string"
+    },
+    "ora": {
+      "type": "datetime"
+    },
+    "admin_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "admin::user"
+    }
+  }
+}
