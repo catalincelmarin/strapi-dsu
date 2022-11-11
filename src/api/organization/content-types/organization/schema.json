@@ -24,9 +24,9 @@
     },
     "articoles": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::article.article",
-      "inversedBy": "organizaties"
+      "mappedBy": "organizaties"
     }
   }
 }

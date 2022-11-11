@@ -1,0 +1,27 @@
+{
+  "kind": "singleType",
+  "collectionName": "caravana_dsus",
+  "info": {
+    "singularName": "caravana-dsu",
+    "pluralName": "caravana-dsus",
+    "displayName": "Caravana DSU"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {
+    "i18n": {
+      "localized": true
+    }
+  },
+  "attributes": {
+    "continut": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "richtext"
+    }
+  }
+}
