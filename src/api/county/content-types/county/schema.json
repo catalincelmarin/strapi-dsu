@@ -24,13 +24,13 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::alert.alert",
-      "inversedBy": "judete"
+      "mappedBy": "judete"
     },
     "users": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
-      "inversedBy": "judete"
+      "mappedBy": "judete"
     }
   }
 }

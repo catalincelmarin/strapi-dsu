@@ -127,15 +127,14 @@ const sendConfirmationEmail = async (user) =>  {
     settings.object = await userPermissionService.template(settings.object, {
       USER: sanitizedUserInfo,
     });
-
+    console.log(settings)
     // Send an email to the user.
     strapi
       .plugin('email')
       .service('email')
       .send({
         to: user.email,
-        from:
-          settings.from.email && settings.from.name
+        from: settings.from.email && settings.from.name
             ? `${settings.from.name} <${settings.from.email}>`
             : undefined,
         replyTo: settings.response_email,

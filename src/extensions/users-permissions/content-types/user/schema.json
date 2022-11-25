@@ -88,6 +88,9 @@
       "relation": "manyToMany",
       "target": "api::county.county",
       "inversedBy": "users"
+    },
+    "lang": {
+      "type": "string"
     }
   }
 }

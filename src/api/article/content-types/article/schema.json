@@ -54,6 +54,12 @@
       "relation": "manyToOne",
       "target": "api::organization.organization",
       "inversedBy": "articoles"
+    },
+    "position": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::pozition.pozition",
+      "mappedBy": "articole"
     }
   }
 }

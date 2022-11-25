@@ -27,6 +27,12 @@
       "type": "relation",
       "relation": "oneToMany",
       "target": "admin::user"
+    },
+    "articole": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::article.article",
+      "inversedBy": "position"
     }
   }
 }
