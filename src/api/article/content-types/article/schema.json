@@ -49,11 +49,11 @@
         }
       }
     },
-    "organizaties": {
+    "organizatie": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "oneToOne",
       "target": "api::organization.organization",
-      "inversedBy": "articoles"
+      "inversedBy": "articol"
     },
     "position": {
       "type": "relation",

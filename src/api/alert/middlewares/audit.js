@@ -40,18 +40,33 @@ const getService = (name) => {
 module.exports = (config, { strapi }) => {
   // Add your own logic here.
   return async (ctx, next) => {
-    strapi.log.info('In audit middleware.');
-    if(['POST','PUT','DELETE'].includes(ctx.request.method.toUpperCase()) && ctx.request.url.includes('api::alert.alert')) {
+    strapi.log.info('In audit middleware.' + ctx.request.url + " " + ctx.request.method);
+    console.log(ctx.request.body)
+    if('POST' === ctx.request.method.toUpperCase() && ctx.request.url.trim()  === '/content-manager/collection-types/api::article.article') {
+      const lastEntry = await strapi.entityService.findMany('api::audit.audit',{filters:{'admin_user':ctx.request.body["createdBy"]}});
+      console.log(lastEntry,"xxx")
+      if (length(lastEntry) > 0) {
+         strapi.entityService.update('api::audit.audit',lastEntry[0]["id"],{ "data": 
+            {
+
+            "action":"Articol nou ",
+            "admin_user":ctx.state.user.id,
+            "ora":ctx.request.body["createdAt"]
+
+        }});
+
+      } else {
       strapi.entityService.create('api::audit.audit',{ "data": 
             {
 
-            "action":'New Content Entry',
+            "action":"Articol nou",
             "admin_user":ctx.request.body["createdBy"],
-            "ora":ctx.request.body["publishedAt"]
+            "ora":ctx.request.body["createdAt"]
             
         }}
 
       );
+      }
       if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert')) {
          console.log(ctx.request.body)
          const pozs = await strapi.entityService.findMany('api::pozition.pozition',{

@@ -22,11 +22,11 @@
       "type": "media",
       "multiple": false
     },
-    "articoles": {
+    "articol": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "oneToOne",
       "target": "api::article.article",
-      "mappedBy": "organizaties"
+      "inversedBy": "organizatie"
     }
   }
 }
