@@ -4,7 +4,8 @@
   "info": {
     "singularName": "audit",
     "pluralName": "audits",
-    "displayName": "Audit "
+    "displayName": "Audit ",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -14,13 +15,13 @@
     "action": {
       "type": "string"
     },
+    "ora": {
+      "type": "datetime"
+    },
     "admin_user": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "admin::user"
-    },
-    "ora": {
-      "type": "datetime"
     }
   }
 }

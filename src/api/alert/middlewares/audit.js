@@ -15,7 +15,7 @@ admin.initializeApp({
   databaseURL: "https://dsu-app-8e51f-default-rtdb.firebaseio.com"
 });
 
-async function sendNotificationToDevice(email,msg) {
+async function sendNotificationToDevice(token,msg) {
 
   const message = msg
 //  console.log("xxxx",message);
@@ -23,12 +23,12 @@ async function sendNotificationToDevice(email,msg) {
   return await admin.messaging().send(message)
   .then((response) => {
     // Response is a message ID string.
-    console.log('Successfully sent message:',email);//msg.token, response);
+    console.log('Successfully sent message:',token);//msg.token, response);
   })
   .catch((error) => {
-    console.log('Error sending message:',email);
+    console.log('Error sending message:',token);
   });
-  
+
 }
 /**
  * `audit` middleware
@@ -41,63 +41,52 @@ module.exports = (config, { strapi }) => {
   // Add your own logic here.
   return async (ctx, next) => {
     strapi.log.info('In audit middleware.' + ctx.request.url + " " + ctx.request.method);
-    console.log(ctx.request.body)
-    if('POST' === ctx.request.method.toUpperCase() && ctx.request.url.trim()  === '/content-manager/collection-types/api::article.article') {
-      const lastEntry = await strapi.entityService.findMany('api::audit.audit',{filters:{'admin_user':ctx.request.body["createdBy"]}});
-      console.log(lastEntry,"xxx")
-      if (length(lastEntry) > 0) {
-         strapi.entityService.update('api::audit.audit',lastEntry[0]["id"],{ "data": 
-            {
+    console.log(await strapi.store.get("user"))
 
-            "action":"Articol nou ",
-            "admin_user":ctx.state.user.id,
-            "ora":ctx.request.body["createdAt"]
 
-        }});
-
-      } else {
-      strapi.entityService.create('api::audit.audit',{ "data": 
-            {
-
-            "action":"Articol nou",
-            "admin_user":ctx.request.body["createdBy"],
-            "ora":ctx.request.body["createdAt"]
-            
-        }}
-
-      );
-      }
-      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert')) {
-         console.log(ctx.request.body)
-         const pozs = await strapi.entityService.findMany('api::pozition.pozition',{
-                 "populate":{"utilizatori":true},
-                 "filters":{
-                 "utilizatori":{
-                    "id":{"$eq":2}
-                    }
-                 }
-	 });
-         console.log(pozs[0])
-         //strapi.entityService.update('api::alert.alert',{"data":{}})
-      }      
-      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('/publish')) {
+      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/publish')) {
 
               const id = parseInt(ctx.request.url.match(/\d+/g))
               console.log("ID is ",id)
               let alert = {}
               if(!isNaN(id)) {
-		console.log({"id":id})
-                let alerts = await strapi.query('api::alert.alert').findMany({'id':id})
+		            console.log({"id":id})
+                let alerts = await strapi.query('api::alert.alert').findMany({'id':id,'populate':['judete']})
                 alerts.forEach(el=>{
                     alert[el.locale]=el
                 })
               }
-              console.log(alert)
-	      const data =  await strapi
+              let counties = alert['ro']['judete'].map(el=>el["id"])
+              let whereCondition = {id:{"$null":false}};
+              let unregs = []
+              if(counties.length) {
+                whereCondition = {
+                  'firebase_token': {"$null": false},
+                  'judete':{
+                    $or:[{
+                      id: {
+                        $contains: counties
+                      }},
+                      {id:{$null:true}}]
+                  }
+                }
+              } else {
+                 unregs =  await strapi
+                  .query('api::unreg-user.unreg-user')
+                  .findMany({
+                    'firebase_token': {"$null": false},
+                  });
+
+
+              }
+
+	      let data =  await strapi
         	  .query('plugin::users-permissions.user')
-	          .findMany({'firebase_token':{"$null":false}});
-           
-	   data.forEach(doc=>{
+	          .findMany({
+              where: whereCondition
+            });
+        data = [...data,unregs]
+	      data.forEach(doc=>{
         	    const msg = {
 				  "token":doc["firebase_token"],
 				  "notification":{
@@ -107,14 +96,11 @@ module.exports = (config, { strapi }) => {
 				}
 
 	            if(doc["firebase_token"] !== null) {
-//        	          console.log(msg)
-//	                  strapi.log.error("SEND TO: " + doc["firebase_token"])
-                	  sendNotificationToDevice(doc.email,msg)
+                	  sendNotificationToDevice(doc["firebase_token"],msg)
         	    }
      	   })
-       }
     }
-      
+
     await next();
   };
 };
