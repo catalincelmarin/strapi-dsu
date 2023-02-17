@@ -41,8 +41,38 @@ module.exports = (config, { strapi }) => {
   // Add your own logic here.
   return async (ctx, next) => {
     strapi.log.info('In audit middleware.' + ctx.request.url + " " + ctx.request.method);
-    console.log(await strapi.store.get("user"))
+    console.log(ctx.request.files)
+      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('test')){
+      await next();
+      const {data} = ctx.request.body
+      const tkn2 = "fox7OI1x1UH8oHnxsR-OQj:APA91bHgi5CpTMdYJZ_KhZwv5aCYBB-B8_ODIJQcx1_o0FAiBiUMdDcQurcv0mCXi4nflg5zCUY0G_EIq7u-p2Tn5ywuxYAyV2PcNIueWvlJPeUjNgiectoslR2KKaVuX1VBvr9DHFu5";
+      const tkn3 = "d2ItGAxnAUM-p5U_230ZDb:APA91bEg8mNXVGYUA1Oo2cy7BJadMS7YZ-MLxTZ9gdWwM-fCezNM-ym3zQQZqse_lNryUQ10YYyaj8zWz_x6fWt7whOLvd6APdzcaYmaDfqfWgaC79YjAjxvcGomPGVrtQz95s0Zjuvv";
+      const tkn = "cdjeGauzYkoClnu1rQm8GQ:APA91bHY-tV9ouObGeT1n0E8b7bLqZYP6200-vaKa_mdNdH2zU2Sor1zfImRHXbZRV_jpHnZ189yaqWzycYeHRWCH3NjgUjkGCBn6N8zwu590gkQgymjOt9gTPIAsQ0h701e1srwmQCc";
+      const msg = {
+        "token":data.token,
+        "notification":{
+        	"title":"Alert title",
+	        "body":"" + (data.token ? data.token : "no token" ),
+        	//"click_action":{
+	        //"alertId":(!isNaN(alert["id"]) ? alert["id"] : alert["ro"]["id"])
+        	//}
+          },"data":{
+             "alertId":"59"
+          },"apns":{
+		"payload":{
+			"aps":{"sound":"default","contentAvailable":true}
+                }
+                //"headers":{
+                  //      "apns-push-type":"background"
+                        //"apns-priority":"5"
+                        //"apns-topic":"ro.orson.dsu"
+                //}
+	  }
+        }
+        sendNotificationToDevice(tkn,msg);
+        return;
 
+      }        
 
       if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/publish')) {
 
@@ -62,6 +92,7 @@ module.exports = (config, { strapi }) => {
               if(counties.length) {
                 whereCondition = {
                   'firebase_token': {"$null": false},
+                  'push_notify':{"$eq":true},
                   'judete':{
                     $or:[{
                       id: {
@@ -74,7 +105,7 @@ module.exports = (config, { strapi }) => {
                  unregs =  await strapi
                   .query('api::unreg-user.unreg-user')
                   .findMany({
-                    'firebase_token': {"$null": false},
+                    'firebase_token': {"$null": false}
                   });
 
 
@@ -92,7 +123,9 @@ module.exports = (config, { strapi }) => {
 				  "notification":{
                                        "title":alert["ro"]["titlu"],
 				       "body":alert["ro"]["titlu"]
-                                   }
+                                  },"data":{
+                                       "alertId": "" + id
+                                  },"apns":{"payload":{"aps":{"sound":"default","contentAvailable":true}}}
 				}
 
 	            if(doc["firebase_token"] !== null) {

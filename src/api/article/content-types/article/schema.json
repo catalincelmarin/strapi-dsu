@@ -8,7 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true,
+    "draftAndPublish": false,
     "populateCreatorFields": true
   },
   "pluginOptions": {
@@ -36,7 +36,7 @@
     "foto": {
       "type": "media",
       "multiple": false,
-      "required": false,
+      "required": true,
       "allowedTypes": [
         "images",
         "files",
@@ -51,15 +51,9 @@
     },
     "organizatie": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "manyToOne",
       "target": "api::organization.organization",
-      "inversedBy": "articol"
-    },
-    "position": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "api::pozition.pozition",
-      "mappedBy": "articole"
+      "inversedBy": "articles"
     }
   }
 }

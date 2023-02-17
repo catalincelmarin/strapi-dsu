@@ -1,0 +1,19 @@
+{
+  "kind": "singleType",
+  "collectionName": "centrul_mobil_de_instruire_a_populatieis",
+  "info": {
+    "singularName": "centrul-mobil-de-instruire-a-populatiei",
+    "pluralName": "centrul-mobil-de-instruire-a-populatieis",
+    "displayName": "Centrul mobil de instruire a populatiei",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "continut": {
+      "type": "richtext"
+    }
+  }
+}

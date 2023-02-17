@@ -4,7 +4,8 @@
   "info": {
     "singularName": "course",
     "pluralName": "courses",
-    "displayName": "Cursuri"
+    "displayName": "Cursuri",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -30,7 +31,8 @@
           "localized": true
         }
       },
-      "type": "richtext"
+      "type": "richtext",
+      "required": true
     },
     "url_youtube": {
       "pluginOptions": {
@@ -47,14 +49,15 @@
       "inversedBy": "curs"
     },
     "imagine_previzualizare": {
+      "type": "media",
+      "multiple": true,
+      "required": true,
       "allowedTypes": [
         "images",
         "files",
         "videos",
         "audios"
       ],
-      "type": "media",
-      "multiple": true,
       "pluginOptions": {
         "i18n": {
           "localized": true

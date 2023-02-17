@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * pozition controller
+ * test controller
  */
 
 const { createCoreController } = require('@strapi/strapi').factories;
 
-module.exports = createCoreController('api::pozition.pozition');
+module.exports = createCoreController('api::test.test');

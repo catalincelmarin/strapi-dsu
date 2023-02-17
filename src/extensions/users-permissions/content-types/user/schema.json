@@ -74,7 +74,7 @@
     },
     "push_notify": {
       "type": "boolean",
-      "default": false
+      "default": true
     },
     "email_notify": {
       "type": "boolean",
@@ -91,6 +91,10 @@
     },
     "lang": {
       "type": "string"
+    },
+    "origin": {
+      "type": "string",
+      "default": "local"
     }
   }
 }

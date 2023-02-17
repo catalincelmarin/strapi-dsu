@@ -88,10 +88,10 @@ const sendConfirmationEmail = async (user) =>  {
 
     const confirmationToken = '' + Math.floor(1000 + Math.random() * 9000);
 
-    const options = {
-      host: 'api.telegram.org',
-      path: '/bot5718683414:AAErHb8uXIopt_BRT43KIb2dICyhU92qdrA/sendMessage?chat_id=@ZHBChnn&text='+ confirmationToken
-    };
+    //const options = {
+    //  host: 'api.telegram.org',
+    //  path: '/bot5718683414:AAErHb8uXIopt_BRT43KIb2dICyhU92qdrA/sendMessage?chat_id=@ZHBChnn&text='+ confirmationToken
+   // };
     await editme(user.id, { confirmationToken });
 
 
@@ -113,7 +113,7 @@ const sendConfirmationEmail = async (user) =>  {
       });
     }
 
-    http.request(options, callback).end();
+    //http.request(options, callback).end();
 
     const apiPrefix = strapi.config.get('api.rest.prefix');
     settings.message = await userPermissionService.template(settings.message, {
@@ -176,8 +176,8 @@ module.exports = (plugin) => {
     if (user.blocked) {
       throw new ApplicationError('User blocked');
     }
-
     await sendConfirmationEmail(user);
+
 
     ctx.send({
       email: user.email,
@@ -222,6 +222,7 @@ module.exports = (plugin) => {
     if (!settings.allow_register) {
       throw new ApplicationError('Register action is currently disabled');
     }
+    console.log("PROVIDER:",ctx.request.body.provider)
 
     const params = {
       ..._.omit(ctx.request.body, [
@@ -231,7 +232,8 @@ module.exports = (plugin) => {
         'resetPasswordToken',
         'provider',
       ]),
-      provider: 'local',
+      provider: ctx.request.body.provider.trim()  === 'FACEBOOK' ? 'local' : 'local',
+      confirmed: ctx.request.body.provider.trim().toLowerCase() !== 'local' ? true : false
     };
 
     await validateRegisterBody(params);
@@ -272,20 +274,22 @@ module.exports = (plugin) => {
         throw new ApplicationError('Email or Username are already taken');
       }
     }
-
     const newUser = {
       ...params,
       role: role.id,
       email: email.toLowerCase(),
       username,
-      confirmed: !settings.email_confirmation,
+      confirmed: ctx.request.body.provider.toLowerCase() !== 'local' ? true : !settings.email_confirmation,
     };
+
+    console.log('pRARM',newUser)
 
     const user = await getService('user').add(newUser);
 
     const sanitizedUser = await sanitizeUser(user, ctx);
 
-    if (settings.email_confirmation) {
+    if (settings.email_confirmation && 
+                 ctx.request.body.provider.toLowerCase()  === 'local') {
       try {
         await sendConfirmationEmail(sanitizedUser);
       } catch (err) {

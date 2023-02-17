@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ro">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Resetare parola</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700%7CRaleway:300,400,700,800&display=swap&subset=latin-ext"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/main.css" />
+    <link
+      rel="shortcut icon"
+      type="image/png"
+      href="./DSU-logo.svg"
+    />
+    <meta property="og:type" content="page" />
+    <meta property="og:title" content="Resetare parola" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="image">
+        <img src="./DSU-logo.svg" />
+      </div>
+      <h1 class="title">Resetare parolă pentru aplicația DSU</h1>
+      <h4 class="sybtitle">
+        Creează o nouă parolă pe care o vei folosi atunci când te loghezi în
+        aplicație
+      </h4>
+      <form
+        action="https://dsuapp.igsu.ro/api/auth/reset-password"
+        method="POST"
+        id="form"
+        enctype="application/x-www-form-urlencoded"
+      >
+        <input type="hidden" id="token" name="token" value="" />
+        <div class="row">
+          <div class="col">
+            <label for="password">Parolă nouă</label>
+            <input type="password" name="password" id="password" value="" />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label for="confirm_password">Confirmă parola nouă</label>
+            <input
+              type="password"
+              name="confirm_password"
+              id="confirm_password"
+              value=""
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="button">
+            <input type="submit" value="Salvează parola" />
+          </div>
+        </div>
+      </form>
+    </div>
+    <script src="./main.js"></script>
+  </body>
+</html>

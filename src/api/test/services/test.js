@@ -1,9 +1,9 @@
 'use strict';
 
 /**
- * pozition service
+ * test service
  */
 
 const { createCoreService } = require('@strapi/strapi').factories;
 
-module.exports = createCoreService('api::pozition.pozition');
+module.exports = createCoreService('api::test.test');

@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Resetare parola</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700|Raleway:300,400,700,800&display=swap&subset=latin-ext" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="container">
+        <div class="image"></div>
+        <form action="https://dsuapp.igsu.ro/api/auth/reset-password" method="POST" id="form" enctype="application/x-www-form-urlencoded">
+          <input type="hi dden" id="token" name="token" value="">
+          <div class="row">
+            <div class="col">
+              <label for="password">Parola noua</label>
+              <input type="password" name="password" id="password" value="">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label for="confirm_password">Confirmare</label>
+              <input type="password" name="confirm_password" id="confirm_password" value="">
+            </div>
+          </div>
+          <div class="row">
+              <div class="col">
+                <input type="submit" value="Trimite">
+              </div>
+          </div>
+        </form>
+  </div>
+  <script>
+    const queryString = window.location.search;
+    document.getElementById("token").value=new URLSearchParams(queryString).get('token');
+    document.getElementById("form").addEventListener("submit",function(event){
+      console.log("sub");
+      event.preventDefault();
+      const pass = document.getElementById('password').value.trim();
+      const conf = document.getElementById('confirm_password').value.trim();
+      const token = document.getElementById("token").value.trim();
+      const send = {
+        password:pass,
+        confirmPassword: conf,
+        token:token
+      };
+      if(conf === pass && conf.length > 6) {
+        fetch(this.action,
+        {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(send)
+        }).then(res=>res.json()).then(data=>{
+          console.log(data)
+        }).catch(err=>{
+          console.log(err)
+        })
+      }
+
+    })
+  </script>
+</body>
+</html>

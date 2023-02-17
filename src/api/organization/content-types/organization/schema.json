@@ -4,7 +4,8 @@
   "info": {
     "singularName": "organization",
     "pluralName": "organizations",
-    "displayName": "Organizatii"
+    "displayName": "Organizatii",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -16,17 +17,24 @@
       "required": true
     },
     "icon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "images"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
-    "articol": {
+    "articles": {
       "type": "relation",
-      "relation": "oneToOne",
+      "relation": "oneToMany",
       "target": "api::article.article",
-      "inversedBy": "organizatie"
+      "mappedBy": "organizatie"
+    },
+    "alerts": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::alert.alert",
+      "mappedBy": "organizatie"
     }
   }
 }
