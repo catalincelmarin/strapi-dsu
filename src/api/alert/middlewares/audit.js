@@ -117,6 +117,7 @@ module.exports = (config, { strapi }) => {
               where: whereCondition
             });
         data = [...data,unregs]
+        const alreadySent = [];
 	      data.forEach(doc=>{
         	    const msg = {
 				  "token":doc["firebase_token"],
@@ -128,7 +129,9 @@ module.exports = (config, { strapi }) => {
                                   },"apns":{"payload":{"aps":{"sound":"default","contentAvailable":true}}}
 				}
 
-	            if(doc["firebase_token"] !== null) {
+	            if(doc["firebase_token"] !== null &&
+                            !alreadySent.includes(doc["firebase_token"])) {
+                            alreadySent.push(doc["firebase_token"])
                 	  sendNotificationToDevice(doc["firebase_token"],msg)
         	    }
      	   })

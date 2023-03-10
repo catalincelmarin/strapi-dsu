@@ -4,7 +4,8 @@
   "info": {
     "singularName": "county",
     "pluralName": "counties",
-    "displayName": "Judete"
+    "displayName": "Judete",
+    "description": ""
   },
   "options": {
     "draftAndPublish": false
@@ -30,6 +31,7 @@
       "type": "relation",
       "relation": "manyToMany",
       "target": "plugin::users-permissions.user",
+      "private": true,
       "mappedBy": "judete"
     }
   }
