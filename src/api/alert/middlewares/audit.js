@@ -8,6 +8,7 @@ module.exports = {
 
 var admin = require("firebase-admin");
 
+const fs = require('fs');
 var serviceAccount = require("./firebase.json");
 
 admin.initializeApp({
@@ -72,10 +73,25 @@ module.exports = (config, { strapi }) => {
         sendNotificationToDevice(tkn,msg);
         return;
 
-      }        
+      }
+      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/unpublish')) {
+          let content = ctx.request.url + " | " + ctx.request.method;
+          fs.appendFile('/file.log', content + "\n", err => {
+                        if (err) {
+                    console.error(err);
+                  }
+                  // done!
+              });
+      }
 
       if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/publish')) {
-
+              let content = ctx.request.url + " | " + ctx.request.method;
+              fs.appendFile('/file.log', content + "\n", err => {
+  			if (err) {
+		    console.error(err);
+		  }
+		  // done!
+	      });
               const id = parseInt(ctx.request.url.match(/\d+/g))
               console.log("ID is ",id)
               let alert = {}
@@ -96,9 +112,9 @@ module.exports = (config, { strapi }) => {
                   'judete':{
                     $or:[{
                       id: {
-                        $contains: counties
+                        '$in': counties
                       }},
-                      {id:{$null:true}}]
+                      {id:{'$null':true}}]
                   }
                 }
               } else {
