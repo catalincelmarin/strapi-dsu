@@ -35,7 +35,7 @@ $RECYCLE.BIN/
 ############################
 # Packages
 ############################
-
+*.sql
 *.7z
 *.csv
 *.dat
@@ -51,6 +51,7 @@ $RECYCLE.BIN/
 *.dll
 *.exe
 *.o
+*.save
 *.seed
 *.so
 *.swo

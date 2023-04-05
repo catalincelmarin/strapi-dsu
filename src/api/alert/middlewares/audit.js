@@ -85,6 +85,7 @@ module.exports = (config, { strapi }) => {
       }
 
       if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/publish')) {
+              await next();
               let content = ctx.request.url + " | " + ctx.request.method;
               fs.appendFile('/file.log', content + "\n", err => {
   			if (err) {
@@ -130,10 +131,25 @@ module.exports = (config, { strapi }) => {
 	      let data =  await strapi
         	  .query('plugin::users-permissions.user')
 	          .findMany({
+              populate: {"judete":true},
               where: whereCondition
             });
         data = [...data,unregs]
         const alreadySent = [];
+         let send = data.
+		filter(doc => ( doc["username"] !== undefined && doc["firebase_token"] !== undefined && doc["firebase_token"] !== null)).
+                map(doc=>doc["firebase_token"])
+          const msg = {
+                "tokens":send,
+                "notification":{
+                     "title":alert["ro"]["titlu"],
+                     "body":alert["ro"]["titlu"]
+                                        },"data":{
+                                             "alertId": "" + id
+                                        },"apns":{"payload":{"aps":{"sound":"default","contentAvailable":true}}}
+              }
+
+        return await admin.messaging().sendMulticast(msg)
 	      data.forEach(doc=>{
         	    const msg = {
 				  "token":doc["firebase_token"],
@@ -150,7 +166,8 @@ module.exports = (config, { strapi }) => {
                             alreadySent.push(doc["firebase_token"])
                 	  sendNotificationToDevice(doc["firebase_token"],msg)
         	    }
-     	   })
+     	   });
+           return;
     }
 
     await next();
