@@ -132,7 +132,7 @@ module.exports = (config, { strapi }) => {
 	            if(doc["firebase_token"] !== null &&
                             !alreadySent.includes(doc["firebase_token"])) {
                             alreadySent.push(doc["firebase_token"])
-                	  sendNotificationToDevice(doc["firebase_token"],msg)
+                	  //sendNotificationToDevice(doc["firebase_token"],msg)
         	    }
      	   })
     }
