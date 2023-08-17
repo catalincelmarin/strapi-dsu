@@ -67,7 +67,7 @@ $RECYCLE.BIN/
 
 .tmp
 *.log
-#*.sql
+*.sql
 *.sqlite
 *.sqlite3
 
@@ -81,13 +81,8 @@ ssl
 .idea
 nbproject
 public/uploads/*
-!public/uploads/css/*
 !public/uploads/.gitkeep
-!public/uploads/*.html
-!public/uploads/css/*.css
-!public/uploads/*.js
-!public/uploads/*.css
-!public/uploads/css/main.css
+
 ############################
 # Node.js
 ############################
@@ -104,7 +99,6 @@ node_modules
 # Tests
 ############################
 
-testApp
 coverage
 
 ############################
@@ -115,5 +109,6 @@ coverage
 license.txt
 exports
 *.cache
+dist
 build
 .strapi-updater.json

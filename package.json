@@ -1,5 +1,5 @@
 {
-  "name": "dsu-4",
+  "name": "v-410-dsu",
   "private": true,
   "version": "0.1.0",
   "description": "A Strapi application",
@@ -10,22 +10,21 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "4.7.0",
-    "@strapi/plugin-users-permissions": "4.7.0",
-    "@strapi/strapi": "4.7.0",
-    "better-sqlite3": "7.4.6",
-    "firebase-admin": "^11.2.0",
-    "mysql": "2.18.1",
-    "strapi-provider-email-smtp": "^1.0.3"
+    "@strapi/plugin-i18n": "4.12.4",
+    "@strapi/plugin-users-permissions": "4.12.4",
+    "@strapi/strapi": "4.12.4",
+    "better-sqlite3": "8.5.0",
+    "firebase-admin": "^11.10.1",
+    "mysql": "^2.18.1"
   },
   "author": {
     "name": "A Strapi developer"
   },
   "strapi": {
-    "uuid": "cb30d061-d549-494c-bce6-562efd8efa70"
+    "uuid": "7bc42860-b330-437d-a960-c7d432b0bbc2"
   },
   "engines": {
-    "node": ">=14.19.1 <=18.x.x",
+    "node": ">=16.0.0 <=20.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT"
