@@ -8,6 +8,7 @@ module.exports = {
 
 var admin = require("firebase-admin");
 
+const fs = require('fs');
 var serviceAccount = require("./firebase.json");
 
 admin.initializeApp({
@@ -72,10 +73,26 @@ module.exports = (config, { strapi }) => {
         sendNotificationToDevice(tkn,msg);
         return;
 
-      }        
+      }
+      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/unpublish')) {
+          let content = ctx.request.url + " | " + ctx.request.method;
+          fs.appendFile('/file.log', content + "\n", err => {
+                        if (err) {
+                    console.error(err);
+                  }
+                  // done!
+              });
+      }
 
       if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/publish')) {
-
+              await next();
+              let content = ctx.request.url + " | " + ctx.request.method;
+              fs.appendFile('/file.log', content + "\n", err => {
+  			if (err) {
+		    console.error(err);
+		  }
+		  // done!
+	      });
               const id = parseInt(ctx.request.url.match(/\d+/g))
               console.log("ID is ",id)
               let alert = {}
@@ -96,9 +113,9 @@ module.exports = (config, { strapi }) => {
                   'judete':{
                     $or:[{
                       id: {
-                        $contains: counties
+                        '$in': counties
                       }},
-                      {id:{$null:true}}]
+                      {id:{'$null':true}}]
                   }
                 }
               } else {
@@ -114,27 +131,67 @@ module.exports = (config, { strapi }) => {
 	      let data =  await strapi
         	  .query('plugin::users-permissions.user')
 	          .findMany({
+              populate: {"judete":true},
               where: whereCondition
             });
+
         data = [...data,unregs]
         const alreadySent = [];
-	      data.forEach(doc=>{
-        	    const msg = {
-				  "token":doc["firebase_token"],
-				  "notification":{
-                                       "title":alert["ro"]["titlu"],
-				       "body":alert["ro"]["titlu"]
-                                  },"data":{
-                                       "alertId": "" + id
-                                  },"apns":{"payload":{"aps":{"sound":"default","contentAvailable":true}}}
-				}
 
-	            if(doc["firebase_token"] !== null &&
-                            !alreadySent.includes(doc["firebase_token"])) {
-                            alreadySent.push(doc["firebase_token"])
-                	  //sendNotificationToDevice(doc["firebase_token"],msg)
-        	    }
-     	   })
+        let send = data.
+	        filter(doc => ( doc["username"] !== undefined && doc["firebase_token"] !== undefined && doc["firebase_token"] !== null)).
+//		filter(doc => doc["username"].includes("orson.ro")).
+                map(doc=>doc["firebase_token"])
+        
+        for(let i = 0; i < send.length; i+= 500) {
+            let batch = send.slice(i,i+500);
+        
+            let msg = {
+                "tokens":batch,
+                "notification":{
+                     "title":alert["ro"]["titlu"],
+                     "body":alert["ro"]["titlu"]
+                },"data":{
+                     "alertId": "" + id
+                },"apns":{
+                  "payload":{
+                  "aps":{
+                  "sound":"default",
+                  "contentAvailable":true
+                    }
+                  }
+               }
+            }
+
+
+            try {
+              admin.messaging().sendMulticast(msg).then((response)=>{
+                  const {successCount,failureCount} = response
+                  const result = `sent ${successCount} | failed ${failureCount}`;
+                  fs.appendFile('/file.log', result + "\n", err => {
+                            if (err) {
+                               console.error(err);
+                            }
+                  });
+              }).catch((err)=>{
+                  const errStr = JSON.stringify(err);
+
+                  fs.appendFile('/file.log', errStr + "\n", err => {
+                            if (err) {
+                               console.error(err);
+                            }
+                  });
+              });
+            } catch( err ){
+                   fs.appendFile('/file.log',  JSON.stringify(err) + "\n", err => {
+                            if (err) {
+                                console.error(err);
+                            }
+                   });
+            }
+        }
+        return;
+
     }
 
     await next();
