@@ -1,0 +1,44 @@
+{
+  "kind": "collectionType",
+  "collectionName": "defibrilator_schedules",
+  "info": {
+    "singularName": "defibrilator-schedule",
+    "pluralName": "defibrilator-schedules",
+    "displayName": "defibrilator_schedule",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "is24Hour": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "isIndisponible": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    },
+    "startTime": {
+      "type": "time",
+      "required": true
+    },
+    "endTime": {
+      "type": "time",
+      "required": true
+    },
+    "defibrilator_id": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::defibrilator.defibrilator",
+      "inversedBy": "defibrilator_schedules_id"
+    },
+    "days": {
+      "type": "json",
+      "required": true
+    }
+  }
+}

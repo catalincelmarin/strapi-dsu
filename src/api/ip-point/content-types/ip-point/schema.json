@@ -4,7 +4,8 @@
   "info": {
     "singularName": "ip-point",
     "pluralName": "ip-points",
-    "displayName": "Puncte de inters"
+    "displayName": "Puncte de inters",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -34,6 +35,11 @@
       "relation": "manyToOne",
       "target": "api::ip-category.ip-category",
       "inversedBy": "interest_points"
+    },
+    "defibrilator": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::defibrilator.defibrilator"
     }
   }
 }

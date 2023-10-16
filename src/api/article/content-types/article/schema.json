@@ -8,8 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": false,
-    "populateCreatorFields": true
+    "draftAndPublish": false
   },
   "pluginOptions": {
     "i18n": {
@@ -35,7 +34,7 @@
     },
     "foto": {
       "type": "media",
-      "multiple": false,
+      "multiple": true,
       "required": true,
       "allowedTypes": [
         "images",

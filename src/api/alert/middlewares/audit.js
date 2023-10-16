@@ -163,7 +163,7 @@ module.exports = (config, { strapi }) => {
                }
             }
 
-
+            
             try {
               admin.messaging().sendMulticast(msg).then((response)=>{
                   const {successCount,failureCount} = response

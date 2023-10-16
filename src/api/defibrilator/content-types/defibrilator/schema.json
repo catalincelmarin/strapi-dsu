@@ -1,0 +1,58 @@
+{
+  "kind": "collectionType",
+  "collectionName": "defibrilators",
+  "info": {
+    "singularName": "defibrilator",
+    "pluralName": "defibrilators",
+    "displayName": "defibrilator",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "cui": {
+      "type": "string",
+      "required": true
+    },
+    "companyName": {
+      "type": "string"
+    },
+    "address": {
+      "type": "text"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "deviceModel": {
+      "type": "string"
+    },
+    "expiryDate": {
+      "type": "date",
+      "required": true
+    },
+    "defibrilator_schedules_id": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::defibrilator-schedule.defibrilator-schedule",
+      "mappedBy": "defibrilator_id"
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "canCallEmergency": {
+      "type": "boolean",
+      "default": false,
+      "required": true
+    }
+  }
+}
