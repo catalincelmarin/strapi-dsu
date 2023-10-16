@@ -6,7 +6,7 @@ ENV NODE_ENV=${NODE_ENV}
 
 WORKDIR /opt/
 COPY package.json ./
-RUN yarn config set fetch-retry-maxtimeout 600000 -g && yarn install
+#RUN yarn config set fetch-retry-maxtimeout 600000 -g && yarn install
 RUN npm install --ignore-scripts=false --foreground-scripts --verbose sharp
 RUN npm install --platform=linuxmusl --arch=x64 sharp
 ENV PATH /opt/node_modules/.bin:$PATH

@@ -8,7 +8,7 @@ services:
     env_file: .env
     environment:
       DATABASE_CLIENT: ${DATABASE_CLIENT}
-      DATABASE_HOST: strapiDB
+      DATABASE_HOST: strapiDB2
       DATABASE_PORT: ${DATABASE_PORT}
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USERNAME: ${DATABASE_USERNAME}
@@ -29,9 +29,9 @@ services:
     networks:
       - strapi
     depends_on:
-      - strapiDB
+      - strapiDB2
 
-  strapiDB:
+  strapiDB2:
     container_name: strapiDB410
     platform: linux/amd64 #for platform error on Apple M1 chips
     restart: unless-stopped

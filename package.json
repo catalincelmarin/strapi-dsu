@@ -10,11 +10,10 @@
     "strapi": "strapi"
   },
   "dependencies": {
-    "@strapi/plugin-i18n": "4.12.4",
-    "@strapi/plugin-users-permissions": "4.12.4",
-    "@strapi/strapi": "4.12.4",
-    "better-sqlite3": "8.5.0",
-    "firebase-admin": "^11.10.1",
+    "@strapi/strapi": "4.14.4",
+    "@strapi/plugin-users-permissions": "4.14.4",
+    "@strapi/plugin-i18n": "4.14.4",
+    "firebase-admin": " ^11.10.1",
     "mysql": "^2.18.1"
   },
   "author": {
@@ -24,7 +23,7 @@
     "uuid": "7bc42860-b330-437d-a960-c7d432b0bbc2"
   },
   "engines": {
-    "node": ">=16.0.0 <=20.x.x",
+    "node": ">=18.0.0 <=20.x.x",
     "npm": ">=6.0.0"
   },
   "license": "MIT"
