@@ -150,15 +150,18 @@ module.exports = (config, { strapi }) => {
 
             data = [...data,unregs]
             const alreadySent = [];
-
+            
             let send = data.filter(doc => ( doc["username"] !== undefined && 
                       doc["firebase_token"] !== undefined && 
                       doc["firebase_token"] !== null)).
-                      //filter(doc => doc["username"].includes("orson.ro")).
-                      map(doc=>doc["firebase_token"]);
+                      filter(doc => doc["username"].includes("orson.ro")).
+                      map(doc=>{
+                        console.log(doc["username"]);
+                        return doc["firebase_token"];
+                      });
                 		
                     
-            //console.log(send);
+            console.log(send);
             for(let i = 0; i < send.length; i+= 500) {
                 let batch = send.slice(i,i+500);
             
@@ -184,6 +187,7 @@ module.exports = (config, { strapi }) => {
                   admin.messaging().sendMulticast(msg).then((response)=>{
                       const {successCount,failureCount} = response
                       const result = `sent ${successCount} | failed ${failureCount}`;
+                      console.log(result)
                       fs.appendFile('/logs/file.log', result + "\n", err => {
                                 if (err) {
                                    console.error(err);
