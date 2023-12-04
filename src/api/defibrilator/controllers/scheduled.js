@@ -36,7 +36,7 @@ module.exports = {
   getScheduled: async (ctx, next) => {
      try {
         let defibs = await strapi.query('api::ip-point.ip-point').findMany({
-             'populate':['defibrilator','defibrilator.defibrilator_schedules_id'],
+             'populate':['defibrilator','defibrilator.defibrilator_schedules_id','defibrilator.photo'],
              'where':{
                   'defibrilator':{'id':{'$null':false}}
              }

@@ -1,7 +1,7 @@
 version: "3"
 services:
-  strapiV410:
-    container_name: strapiV410
+  strapiV4101:
+    container_name: strapiV4101
     build: .
     image: strapi:latest
     restart: unless-stopped
@@ -24,6 +24,7 @@ services:
       - ./yarn.lock:/opt/yarn.lock
       - ./.env:/opt/app/.env
       - ./public/uploads:/opt/app/public/uploads
+      - ./logs/file.log:/logs/file.log
     ports:
       - "1337:1337"
     networks:

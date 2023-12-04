@@ -41,14 +41,16 @@ const getService = (name) => {
 module.exports = (config, { strapi }) => {
   // Add your own logic here.
   return async (ctx, next) => {
+
+    await next();
     strapi.log.info('In audit middleware.' + ctx.request.url + " " + ctx.request.method);
-    console.log(ctx.request.files)
-      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('test')){
-      await next();
+    if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('test')) {
+      
       const {data} = ctx.request.body
       const tkn2 = "fox7OI1x1UH8oHnxsR-OQj:APA91bHgi5CpTMdYJZ_KhZwv5aCYBB-B8_ODIJQcx1_o0FAiBiUMdDcQurcv0mCXi4nflg5zCUY0G_EIq7u-p2Tn5ywuxYAyV2PcNIueWvlJPeUjNgiectoslR2KKaVuX1VBvr9DHFu5";
       const tkn3 = "d2ItGAxnAUM-p5U_230ZDb:APA91bEg8mNXVGYUA1Oo2cy7BJadMS7YZ-MLxTZ9gdWwM-fCezNM-ym3zQQZqse_lNryUQ10YYyaj8zWz_x6fWt7whOLvd6APdzcaYmaDfqfWgaC79YjAjxvcGomPGVrtQz95s0Zjuvv";
       const tkn = "cdjeGauzYkoClnu1rQm8GQ:APA91bHY-tV9ouObGeT1n0E8b7bLqZYP6200-vaKa_mdNdH2zU2Sor1zfImRHXbZRV_jpHnZ189yaqWzycYeHRWCH3NjgUjkGCBn6N8zwu590gkQgymjOt9gTPIAsQ0h701e1srwmQCc";
+      
       const msg = {
         "token":data.token,
         "notification":{
@@ -60,39 +62,49 @@ module.exports = (config, { strapi }) => {
           },"data":{
              "alertId":"59"
           },"apns":{
-		"payload":{
-			"aps":{"sound":"default","contentAvailable":true}
-                }
+		      "payload":{
+			      "aps":{
+              "sound":"default",
+              "contentAvailable":true
+            }
+          }
                 //"headers":{
                   //      "apns-push-type":"background"
                         //"apns-priority":"5"
                         //"apns-topic":"ro.orson.dsu"
                 //}
-	  }
-        }
+	        }
+        };
+
         sendNotificationToDevice(tkn,msg);
         return;
 
       }
-      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/unpublish')) {
+
+
+      if(ctx.request.method.toUpperCase() == 'POST' && 
+          ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/unpublish')) {
           let content = ctx.request.url + " | " + ctx.request.method;
-          fs.appendFile('/file.log', content + "\n", err => {
+          fs.appendFile('/logs/file.log', content + "\n", err => {
                         if (err) {
                     console.error(err);
                   }
                   // done!
-              });
+          });
       }
 
-      if(ctx.request.method.toUpperCase() == 'POST' && ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/publish')) {
-              await next();
+      //console.log("BODY:",ctx.request.body);
+      if(ctx.request.method.toUpperCase() == 'POST' && 
+          ctx.request.url.includes('api::alert.alert') && 
+          ctx.request.url.includes('/publish')) {
+              
               let content = ctx.request.url + " | " + ctx.request.method;
-              fs.appendFile('/file.log', content + "\n", err => {
-  			if (err) {
-		    console.error(err);
-		  }
-		  // done!
-	      });
+              fs.appendFile('/logs/file.log', content + "\n", err => {
+                  if (err) {
+                  console.error(err);
+                  }
+              });
+
               const id = parseInt(ctx.request.url.match(/\d+/g))
               console.log("ID is ",id)
               let alert = {}
@@ -107,6 +119,7 @@ module.exports = (config, { strapi }) => {
               let whereCondition = {id:{"$null":false}};
               let unregs = []
               if(counties.length) {
+                // @ts-ignore
                 whereCondition = {
                   'firebase_token': {"$null": false},
                   'push_notify':{"$eq":true},
@@ -128,72 +141,76 @@ module.exports = (config, { strapi }) => {
 
               }
 
-	      let data =  await strapi
-        	  .query('plugin::users-permissions.user')
-	          .findMany({
-              populate: {"judete":true},
-              where: whereCondition
-            });
+            let data =  await strapi
+                .query('plugin::users-permissions.user')
+                .findMany({
+                  populate: {"judete":true},
+                  where: whereCondition
+                });
 
-        data = [...data,unregs]
-        const alreadySent = [];
+            data = [...data,unregs]
+            const alreadySent = [];
 
-        let send = data.
-	        filter(doc => ( doc["username"] !== undefined && doc["firebase_token"] !== undefined && doc["firebase_token"] !== null)).
-//		filter(doc => doc["username"].includes("orson.ro")).
-                map(doc=>doc["firebase_token"])
-        
-        for(let i = 0; i < send.length; i+= 500) {
-            let batch = send.slice(i,i+500);
-        
-            let msg = {
-                "tokens":batch,
-                "notification":{
-                     "title":alert["ro"]["titlu"],
-                     "body":alert["ro"]["titlu"]
-                },"data":{
-                     "alertId": "" + id
-                },"apns":{
-                  "payload":{
-                  "aps":{
-                  "sound":"default",
-                  "contentAvailable":true
-                    }
-                  }
-               }
-            }
-
+            let send = data.filter(doc => ( doc["username"] !== undefined && 
+                      doc["firebase_token"] !== undefined && 
+                      doc["firebase_token"] !== null)).
+                      //filter(doc => doc["username"].includes("orson.ro")).
+                      map(doc=>doc["firebase_token"]);
+                		
+                    
+            //console.log(send);
+            for(let i = 0; i < send.length; i+= 500) {
+                let batch = send.slice(i,i+500);
             
-            try {
-              admin.messaging().sendMulticast(msg).then((response)=>{
-                  const {successCount,failureCount} = response
-                  const result = `sent ${successCount} | failed ${failureCount}`;
-                  fs.appendFile('/file.log', result + "\n", err => {
-                            if (err) {
-                               console.error(err);
-                            }
-                  });
-              }).catch((err)=>{
-                  const errStr = JSON.stringify(err);
+                let msg = {
+                    "tokens":batch,
+                    "notification":{
+                        "title":alert["ro"]["titlu"],
+                        "body":alert["ro"]["titlu"]
+                    },"data":{
+                        "alertId": "" + id
+                    },"apns":{
+                      "payload":{
+                      "aps":{
+                      "sound":"default",
+                      "contentAvailable":true
+                        }
+                      }
+                  }
+                }
 
-                  fs.appendFile('/file.log', errStr + "\n", err => {
-                            if (err) {
-                               console.error(err);
-                            }
+                
+                try {
+                  admin.messaging().sendMulticast(msg).then((response)=>{
+                      const {successCount,failureCount} = response
+                      const result = `sent ${successCount} | failed ${failureCount}`;
+                      fs.appendFile('/logs/file.log', result + "\n", err => {
+                                if (err) {
+                                   console.error(err);
+                                }
+                      });
+                  }).catch((err)=>{
+                      const errStr = JSON.stringify(err);
+
+                      fs.appendFile('/logs/file.log', errStr + "\n", err => {
+                                if (err) {
+                                   console.error(err);
+                                }
+                      });
                   });
-              });
-            } catch( err ){
-                   fs.appendFile('/file.log',  JSON.stringify(err) + "\n", err => {
-                            if (err) {
-                                console.error(err);
-                            }
-                   });
-            }
+                } catch( err ){
+                       fs.appendFile('/logs/file.log',  JSON.stringify(err) + "\n", err => {
+                                if (err) {
+                                    console.error(err);
+                                }
+                       });
+                }
         }
         return;
 
     }
 
-    await next();
+    
   };
 };
+

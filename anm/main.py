@@ -1,3 +1,5 @@
+import time
+import threading
 nowcasting_url = "https://www.meteoromania.ro/wp-json/meteoapi/v2/avertizari-nowcasting"
 import hashlib
 import requests
@@ -17,10 +19,7 @@ template = {"data":{
     "locale": "ro"
 }}
 
-connection = sqlite3.connect('anm.db')
-cursor = connection.cursor()
 
-cursor.execute('''CREATE TABLE IF NOT EXISTS alerts (id INTEGER PRIMARY KEY, uniqueid TEXT)''')
 
 def send_data(url,data):
     try:
@@ -63,66 +62,92 @@ def read_data(url):
     finally:
         return data
 
+def run_api():
+    connection = sqlite3.connect('anm.db')
+    cursor = connection.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS alerts (id INTEGER PRIMARY KEY, uniqueid TEXT)''')
 
-with open("./judete.json","r") as file:
-    data = json.loads(file.read().strip())
-    countyJSON = {}
-    colorJSON = {
-        "galben":3,
-        "portocaliu":2,
-         "roșu":1
-    }
-    for item in data['data']:
-        countyJSON[item['attributes']['nume']] = item['id']
+    with open("./judete.json","r") as file:
+        data = json.loads(file.read().strip())
+        countyJSON = {}
+        colorJSON = {
+            "galben":3,
+            "portocaliu":2,
+            "roșu":1,
+            "rosu":1
+        }
+        for item in data['data']:
+            countyJSON[item['attributes']['nume']] = item['id']
 
-    pattern = "|".join(list(countyJSON.keys()))
+        pattern = "|".join(list(countyJSON.keys()))
 
+        alerts = read_data(nowcasting_url)
 
-    alerts = read_data(nowcasting_url)
-    if alerts is not None and type(alerts).__name__ != 'str':
+        if alerts is not None and type(alerts).__name__ != 'str':
 
-        for alert in alerts['avertizare']:
+            if type(alerts['avertizare']).__name__ == 'dict':
+                alerts['avertizare'] = [alerts['avertizare']]
 
-            text = alert['@attributes']['zona']
-            matches = re.findall(pattern, text)
-            color = colorJSON[alert['@attributes']['numeCuloare']]
+            for alert in alerts['avertizare']:
+                print(alert)
+                text = alert['@attributes']['zona']
+                matches = re.findall(pattern, text)
+                color = colorJSON[alert['@attributes']['numeCuloare']]
 
-            if matches:
-                areaSets = set()
-                for item in matches:
-                    areaSets.add(countyJSON[item])
-                print("Matched groups:", list(areaSets),matches,color)
-                datetime_object = datetime.strptime(alert['@attributes']["dataInceput"], "%Y-%m-%dT%H:%M")
-                date_part, time_part = alert['@attributes']["dataSfarsit"].split('T')
-                # Extract the hour value from the time_part
-                finish_time = datetime_object + timedelta(minutes=int(time_part.split(':')[0]))
-                hash_object = hashlib.sha256()
+                if matches:
+                    areaSets = set()
+                    for item in matches:
+                        areaSets.add(countyJSON[item])
+                    print("Matched groups:", list(areaSets),matches,color)
+                    time_difference = timedelta(hours=-2)
+                    try:
+                        datetime_object = datetime.strptime(alert['@attributes']["dataInceput"], "%Y-%m-%dT%H:%M") + time_difference
+                        finish_time = datetime.strptime(alert['@attributes']["dataSfarsit"], "%Y-%m-%dT%H:%M") + time_difference
+                    except:
+                        continue
 
-                data = alert['@attributes']["dataInceput"].strip() + alert['@attributes']["dataInceput"].strip() + alert['@attributes']['zona'].strip()
-                # Update the hash object with the input data
-                hash_object.update(data.encode('utf-8'))
+                    #date_part, time_part = alert['@attributes']["dataSfarsit"].split('T')
+                    # Extract the hour value from the time_part
+                    #finish_time = datetime_object + timedelta(minutes=int(time_part.split(':')[0]))
+                    hash_object = hashlib.sha256()
 
-                # Get the hexadecimal representation of the hash
-                unique_hash = hash_object.hexdigest()
+                    data = alert['@attributes']["dataInceput"].strip() + alert['@attributes']["dataSfarsit"].strip() + alert['@attributes']['zona'].strip()
+                    # Update the hash object with the input data
+                    hash_object.update(data.encode('utf-8'))
 
-                print("Unique Hash:", unique_hash)
-                alertJSON = {
-                    'start':datetime_object.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                    'final':finish_time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
-                    'titlu':alert['@attributes']["numeTipMesaj"],
-                    'continut':alert['@attributes']["semnalare"] + "\n" + text,
-                    'locale':'ro',
-                    'organizatie':2,
-                    'coduri_alerta':color,
-                    'judete':list(areaSets)
-                }
-                cursor.execute(f"SELECT * FROM alerts WHERE uniqueid='{unique_hash}'")
-                row = cursor.fetchone()
+                    # Get the hexadecimal representation of the hash
+                    unique_hash = hash_object.hexdigest()
 
-                if row is None:
-                    cursor.execute("INSERT INTO alerts (uniqueid) VALUES (?)", (str(unique_hash),))
-                    send_data("http://localhost:1337/api/alerts",alertJSON)
-            else:
-                print("No matches found.")
+                    print("Unique Hash:", unique_hash)
+                    alertJSON = {
+                        'start':datetime_object.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                        'final':finish_time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
+                        'titlu':alert['@attributes']["numeTipMesaj"] + " : Cod " + alert['@attributes']['numeCuloare'],
+                        'continut':alert['@attributes']["semnalare"] + "\n" + text,
+                        'locale':'ro',
+                        'organizatie':2,
+                        'coduri_alerta':color,
+                        'judete':list(areaSets),
+                        'publishedAt':None
+                    }
+                    cursor.execute(f"SELECT * FROM alerts WHERE uniqueid='{unique_hash}'")
+                    row = cursor.fetchone()
+                    if row is None:
+                        cursor.execute("INSERT INTO alerts (uniqueid) VALUES (?)", (str(unique_hash),))
+                        connection.commit()
 
+                        send_data("http://localhost:1337/api/alerts",alertJSON)
+                else:
+                    print("No matches found.")
+        else:
+            print("NO ALERTS")
+def run():
+    while True:
+        try:
+            run_api()
+        except Exception as err:
+            print(err)
+        print("repeating")
+        time.sleep(60*10)
 
+threading.Thread(target=run,args=()).start()
