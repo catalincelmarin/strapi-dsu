@@ -102,9 +102,35 @@ def run_api():
                     time_difference = timedelta(hours=-2)
                     try:
                         datetime_object = datetime.strptime(alert['@attributes']["dataInceput"], "%Y-%m-%dT%H:%M") + time_difference
-                        finish_time = datetime.strptime(alert['@attributes']["dataSfarsit"], "%Y-%m-%dT%H:%M") + time_difference
-                    except:
-                        continue
+                    except Exception as e:
+                        date, hours = alert['@attributes']["dataInceput"].split("T")
+                        h,m = hours.split(":")
+                        h= h[::-1] if int(h) > 23 else h
+
+                        try:
+                            alert['@attributes']["dataInceput"] = f"{date}T{h}:{m}"
+                            datetime_object = datetime.strptime(f"{date}T{h}:{m}", "%Y-%m-%dT%H:%M") + time_difference
+                        except Exception as e:
+                            print("Failed twice")
+                            print(e)
+                            continue
+
+                    try:
+                        finish_time = datetime.strptime(alert['@attributes']["dataSfarsit"],
+                                                        "%Y-%m-%dT%H:%M") + time_difference
+                    except Exception as e:
+                        date, hours = alert['@attributes']["dataSfarist"].split("T")
+                        h, m = hours.split(":")
+                        h = h[::-1] if int(h) > 23 else h
+
+                        try:
+                            alert['@attributes']["dataSfarist"] = f"{date}T{h}:{m}"
+                            finish_time = datetime.strptime(f"{date}T{h}:{m}",
+                                                                "%Y-%m-%dT%H:%M") + time_difference
+                        except Exception as e:
+                            print("Failed twice")
+                            print(e)
+                            continue
 
                     #date_part, time_part = alert['@attributes']["dataSfarsit"].split('T')
                     # Extract the hour value from the time_part
@@ -123,7 +149,7 @@ def run_api():
                         'start':datetime_object.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                         'final':finish_time.strftime("%Y-%m-%dT%H:%M:%S.000Z"),
                         'titlu':alert['@attributes']["numeTipMesaj"] + " : Cod " + alert['@attributes']['numeCuloare'],
-                        'continut':alert['@attributes']["semnalare"] + "\n" + text,
+                        'continut':(alert['@attributes']["semnalare"] + "\n" + text).replace("<br>","").replace("<br/>",""),
                         'locale':'ro',
                         'organizatie':2,
                         'coduri_alerta':color,

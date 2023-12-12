@@ -85,7 +85,7 @@ module.exports = (config, { strapi }) => {
       if(ctx.request.method.toUpperCase() == 'POST' && 
           ctx.request.url.includes('api::alert.alert') && ctx.request.url.includes('/unpublish')) {
           let content = ctx.request.url + " | " + ctx.request.method;
-          fs.appendFile('/logs/file.log', content + "\n", err => {
+          fs.appendFile('/home/node/logs/file.log', content + "\n", err => {
                         if (err) {
                     console.error(err);
                   }
@@ -99,7 +99,7 @@ module.exports = (config, { strapi }) => {
           ctx.request.url.includes('/publish')) {
               
               let content = ctx.request.url + " | " + ctx.request.method;
-              fs.appendFile('/logs/file.log', content + "\n", err => {
+              fs.appendFile('/home/node/logs/file.log', content + "\n", err => {
                   if (err) {
                   console.error(err);
                   }
@@ -184,7 +184,7 @@ module.exports = (config, { strapi }) => {
                   admin.messaging().sendMulticast(msg).then((response)=>{
                       const {successCount,failureCount} = response
                       const result = `sent ${successCount} | failed ${failureCount}`;
-                      fs.appendFile('/logs/file.log', result + "\n", err => {
+                      fs.appendFile('/home/node/logs/file.log', result + "\n", err => {
                                 if (err) {
                                    console.error(err);
                                 }
@@ -192,14 +192,14 @@ module.exports = (config, { strapi }) => {
                   }).catch((err)=>{
                       const errStr = JSON.stringify(err);
 
-                      fs.appendFile('/logs/file.log', errStr + "\n", err => {
+                      fs.appendFile('/home/node/logs/file.log', errStr + "\n", err => {
                                 if (err) {
                                    console.error(err);
                                 }
                       });
                   });
                 } catch( err ){
-                       fs.appendFile('/logs/file.log',  JSON.stringify(err) + "\n", err => {
+                       fs.appendFile('/home/node/logs/file.log',  JSON.stringify(err) + "\n", err => {
                                 if (err) {
                                     console.error(err);
                                 }

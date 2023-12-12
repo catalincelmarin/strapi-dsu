@@ -24,7 +24,7 @@ services:
       - ./yarn.lock:/opt/yarn.lock
       - ./.env:/opt/app/.env
       - ./public/uploads:/opt/app/public/uploads
-      - ./logs/file.log:/logs/file.log
+      - ./logs/file.log:/home/node/logs/file.log
     ports:
       - "1337:1337"
     networks:
