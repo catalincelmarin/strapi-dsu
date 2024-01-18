@@ -1,0 +1,32 @@
+name: Docker Image CI
+      
+jobs:
+          
+
+  deploy:
+    name: Deploy to Remote Server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to Remote Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          port: 22
+          script: |
+            # Got to the project directory
+            cd /home/crypto/strapi-dsu
+
+            #Git pull
+            git pull
+
+            # Pull image
+            docker-compose --build
+            
+            # Run a new container from a new image
+            docker-compose up -d --force-recreate --no-deps strapiV4101
+
+            # Free up space
+            docker system prune -a
