@@ -16,6 +16,7 @@ jobs:
           username: ${{ secrets.REMOTE_USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           port: 22
+          passphrase: ${{ secrets.PRIVATE_KEY_PASSPHRASE }}
           script: |
             # Got to the project directory
             cd /home/crypto/strapi-dsu
