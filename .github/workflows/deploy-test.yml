@@ -1,8 +1,9 @@
 name: Docker Image CI
-      
-jobs:
-          
 
+on:
+  workflow_dispatch:
+    
+jobs:
   deploy:
     name: Deploy to Remote Server
     runs-on: ubuntu-latest
